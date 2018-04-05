@@ -6,7 +6,7 @@ def test_init_and_full1():
     g.set_game(1, 2, 1)
     a = ["f", "f"]
     g.full(0, a)
-    if g.n == 1 and g.m == 2 and g.k == 1:
+    if g.height == 1 and g.length == 2 and g.steps == 1:
         print("Init1 success")
     else:
         print("Init1 failure")
@@ -23,7 +23,7 @@ def test_init_and_full2():
     a2 = ["n", "f", "n"]
     g.full(0, a1)
     g.full(1, a2)
-    if g.n == 2 and g.m == 3 and g.k == 1:
+    if g.height == 2 and g.length == 3 and g.steps == 1:
         print("Init2 success")
     else:
         print("Init2 failure")
