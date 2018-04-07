@@ -1,10 +1,11 @@
 import lib
-import Tests
+import tests
 
-ans = input()
-if ans == "test":
-    Tests.test()
-elif ans == "file":
-    lib.file_run()
-else:
-    lib.run()
+if __name__ == "__main__":
+    ans = input()
+    if ans == "test":
+        tests.test()
+    elif ans == "file":
+        lib.file_run()
+    else:
+        lib.run()
