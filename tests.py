@@ -76,6 +76,47 @@ def test_count3():
     assert b == [[0, 0, 0], [2, 3, 2], [1, 2, 1]]
 
 
+def test_objects_update1():
+    g = lib.CLifegame()
+    g.set_game(3, 4, 1)
+    a = [[None]*4 for i in range(3)]
+    a[0] = ["f", "f", "r", "f"]
+    a[1] = ["n", "f", "n", "s"]
+    a[2] = ["f", "s", "s", "s"]
+    for i in range(3):
+        g.full(i, a[i])
+    fish = lib.Fish()
+    ocean = lib.Ocean()
+    shrimp = lib.Shrimp()
+    rock = lib.Rock()
+    assert rock.update(g, 0, 2) == rock
+    assert ocean.update(g, 1, 0) == ocean
+    assert ocean.update(g, 1, 2) == fish
+    assert fish.update(g, 0, 3) == ocean
+    assert fish.update(g, 0, 0) == fish
+    assert shrimp.update(g, 2, 2) == shrimp
+    assert shrimp.update(g, 2, 1) == ocean
+
+
+def test_objects_update2():
+    g = lib.CLifegame()
+    g.set_game(3, 3, 2)
+    a = [[None]*3 for i in range(3)]
+    a[0] = ["f", "f", "f"]
+    a[1] = ["n", "f", "n"]
+    a[2] = ["s", "s", "s"]
+    for i in range(3):
+        g.full(i, a[i])
+    fish = lib.Fish()
+    ocean = lib.Ocean()
+    shrimp = lib.Shrimp()
+    assert ocean.update(g, 1, 0) == fish
+    assert fish.update(g, 0, 2) == fish
+    assert fish.update(g, 0, 1) == fish
+    assert shrimp.update(g, 2, 2) == ocean
+    assert shrimp.update(g, 2, 1) == shrimp
+
+
 def test_next1():
     g = lib.CLifegame()
     g.set_game(2, 3, 1)
@@ -123,6 +164,8 @@ def test():
     test_count1()
     test_count2()
     test_count3()
+    test_objects_update1()
+    test_objects_update2()
     test_next1()
     test_next2()
     test_next3()

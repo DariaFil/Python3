@@ -1,12 +1,98 @@
 import sys
 
 
+'''Общий абстрактный класс объектов поля'''
+class Object:
+    def __init__(self):
+        pass
+
+    def __eq__(self, other):
+        if self.code() == other.code():
+            return True
+        else:
+            return False
+
+    def __hash__(self):
+        return self.code()
+
+    '''Возвращние кода объекта, позволяющее переопределить равенство объектов и их хэширование.
+        Код для каждого объекта уникален, метод переопределён в каждом из потомков'''
+    def code(self):
+        pass
+
+    '''Функция поведения объекта при изменении состояния поля, переопределённая в каждом из потомков'''
+    def update(self, life, i, j):
+        pass
+
+
+'''Класс ячейки со скалами'''
+class Rock(Object):
+    def code(self):
+        return 1
+
+    def update(self, life, i, j):
+        rock = Rock()
+        return rock
+
+
+'''Класс ячейки с рыбой'''
+class Fish(Object):
+    def code(self):
+        return 2
+
+    def update(self, life, i, j):
+        if life.count(i, j, 'f') > 3 or life.count(i, j, 'f') < 2:
+            ocean = Ocean()
+            return ocean
+        else:
+            fish = Fish()
+            return fish
+
+
+'''Класс ячейки пустого океана'''
+class Ocean(Object):
+    def code(self):
+        return 0
+
+    def update(self, life, i, j):
+        if life.count(i, j, 'f') == 3:
+            fish = Fish()
+            return fish
+        elif life.count(i, j, 's') == 3:
+            shrimp = Shrimp()
+            return shrimp
+        else:
+            ocean = Ocean()
+            return ocean
+
+
+'''Класс ячейки с креветкой'''
+class Shrimp(Object):
+    def code(self):
+        return 3
+
+    def update(self, life, i, j):
+        if life.count(i, j, 's') > 3 or life.count(i, j, 's') < 2:
+            ocean = Ocean()
+            return ocean
+        else:
+            shrimp = Shrimp()
+            return shrimp
+
+
 class CLifegame(object):
     def __init__(self):
         self.height = 0
         self.length = 0
         self.steps = 0
         self.arr = []
+        self.def_ocean = Ocean()
+        self.def_rock = Rock()
+        self.def_fish = Fish()
+        self.def_shrimp = Shrimp()
+        '''Словари для преобразования символа поля в класс объекта, заданного этим символом, и обратно'''
+        self.diction = {"n": self.def_ocean, "r": self.def_rock, "f": self.def_fish, "s": self.def_shrimp}
+        self.undiction = {self.def_ocean: "n", self.def_rock: "r", self.def_fish: "f", self.def_shrimp: "s"}
 
     '''Инициация параметорв поля'''
     def set_game(self, height, length, steps):
@@ -36,67 +122,15 @@ class CLifegame(object):
                         c += 1
         return c
 
-    '''Поведение ячеек океана'''
-    def ocean_behavior(self, i, j):
-        if self.count(i, j, 'f') == 3:
-            return 'f'
-        elif self.count(i, j, 's') == 3:
-            return 's'
-        else:
-            return self.arr[i][j]
-
-    '''Пведение ячеек со скалами'''
-    def rock_behavior(self, i, j):
-        return self.arr[i][j]
-
-    '''Поведение ячеек с рыбами'''
-    def fish_behavior(self, i, j):
-        if self.count(i, j, 'f') > 3 or self.count(i, j, 'f') < 2:
-            return 'n'
-        else:
-            return self.arr[i][j]
-
-    '''Поведение ячеек с креветками'''
-    def shrimp_behavior(self, i, j):
-        if self.count(i, j, 's') > 3 or self.count(i, j, 's') < 2:
-            return 'n'
-        else:
-            return self.arr[i][j]
-
     '''Переход к следующему состоянию океана'''
     def next(self):
         arr2 = [[None]*self.length for l in range(self.height)]
         for i in range(self.height):
             for j in range(self.length):
-                if self.arr[i][j] == 'n':
-                    arr2[i][j] = self.ocean_behavior(i, j)
-                elif self.arr[i][j] == 'f':
-                    arr2[i][j] = self.fish_behavior(i, j)
-                elif self.arr[i][j] == 's':
-                    arr2[i][j] = self.shrimp_behavior(i, j)
-                elif self.arr[i][j] == 'r':
-                    arr2[i][j] = self.rock_behavior(i, j)
+                obj = self.diction[self.arr[i][j]]
+                arr2[i][j] = self.undiction[obj.update(self, i, j)]
+
         self.arr = arr2
-    arr = []
-    height = 0
-    length = 0
-    steps = 0
-
-
-class Rock:
-    pass
-
-
-class Fish:
-    pass
-
-
-class Ocean:
-    pass
-
-
-class Shrimp:
-    pass
 
 
 def input(ans):
