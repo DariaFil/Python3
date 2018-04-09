@@ -1,5 +1,6 @@
 import sys
 
+
 class CLifegame(object):
     def __init__(self):
         self.height = 0
@@ -7,21 +8,25 @@ class CLifegame(object):
         self.steps = 0
         self.arr = []
 
+    '''Инициация параметорв поля'''
     def set_game(self, height, length, steps):
         self.height = height
         self.length = length
         self.steps = steps
         self.arr = [[None]*length for i in range(height)]
 
+    '''Заполнение масиива поля игры'''
     def full(self, i, d):
         self.arr[i] = d
 
+    '''Проверка существования ячейки с данными координатами'''
     def exist(self, i, j):
         if 0 <= i < self.height and 0 <= j < self.length:
             return True
         else:
             return False
 
+    '''Подсчёт соседей того же типа, что и объект в данной ячейке'''
     def count(self, i, j, d):
         c = 0
         for i_inc in range(-1, 2):
@@ -31,6 +36,7 @@ class CLifegame(object):
                         c += 1
         return c
 
+    '''Поведение ячеек океана'''
     def ocean_behavior(self, i, j):
         if self.count(i, j, 'f') == 3:
             return 'f'
@@ -39,21 +45,25 @@ class CLifegame(object):
         else:
             return self.arr[i][j]
 
+    '''Пведение ячеек со скалами'''
     def rock_behavior(self, i, j):
         return self.arr[i][j]
 
+    '''Поведение ячеек с рыбами'''
     def fish_behavior(self, i, j):
         if self.count(i, j, 'f') > 3 or self.count(i, j, 'f') < 2:
             return 'n'
         else:
             return self.arr[i][j]
 
+    '''Поведение ячеек с креветками'''
     def shrimp_behavior(self, i, j):
         if self.count(i, j, 's') > 3 or self.count(i, j, 's') < 2:
             return 'n'
         else:
             return self.arr[i][j]
 
+    '''Переход к следующему состоянию океана'''
     def next(self):
         arr2 = [[None]*self.length for l in range(self.height)]
         for i in range(self.height):
