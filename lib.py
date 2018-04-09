@@ -1,3 +1,5 @@
+import sys
+
 class CLifegame(object):
     def __init__(self):
         self.height = 0
@@ -46,7 +48,7 @@ class CLifegame(object):
         else:
             return self.arr[i][j]
 
-    def sham_behavior(self, i, j):
+    def shrimp_behavior(self, i, j):
         if self.count(i, j, 's') > 3 or self.count(i, j, 's') < 2:
             return 'n'
         else:
@@ -61,7 +63,7 @@ class CLifegame(object):
                 elif self.arr[i][j] == 'f':
                     arr2[i][j] = self.fish_behavior(i, j)
                 elif self.arr[i][j] == 's':
-                    arr2[i][j] = self.sham_behavior(i, j)
+                    arr2[i][j] = self.shrimp_behavior(i, j)
                 elif self.arr[i][j] == 'r':
                     arr2[i][j] = self.rock_behavior(i, j)
         self.arr = arr2
@@ -71,25 +73,26 @@ class CLifegame(object):
     steps = 0
 
 
-def console_input():
-    l = list(input().split())
-    cgame = CLifegame()
-    cgame.set_game(int(l[0]), int(l[1]), int(l[2]))
-    for i in range(cgame.height):
-        l = list(input())
-        cgame.full(i, l)
-    return cgame
+class Rock:
+    pass
 
 
-def console_output(cgame):
-    for i in range(cgame.height):
-        for j in range(cgame.length):
-            print(cgame.arr[i][j], end='')
-        print()
+class Fish:
+    pass
 
 
-def file_input():
-    f = open('input.txt', 'r')
+class Ocean:
+    pass
+
+
+class Shrimp:
+    pass
+
+
+def input(ans):
+    f = sys.stdin
+    if ans == "file":
+        f = open('input.txt', 'r')
     l = []
     i = -1
     cgame = CLifegame()
@@ -102,27 +105,25 @@ def file_input():
             l = list(line)
             cgame.full(i, l)
             i += 1
-    f.close()
+    if ans == "file":
+        f.close()
     return cgame
 
 
-def file_output(cgame):
-    f = open('output.txt', 'w')
+def output(ans, cgame):
+    f = sys.stdout
+    if ans == "file":
+        f = open('output.txt', 'w')
     for i in range(cgame.height):
         for j in range(cgame.length):
             f.write(cgame.arr[i][j])
         f.write('\n')
+    if ans == "file":
+        f.close()
 
 
-def run():
-    game = console_input()
+def run(ans):
+    game = input(ans)
     for i1 in range(game.steps):
         game.next()
-    console_output(game)
-
-
-def file_run():
-    game = file_input()
-    for i1 in range(game.steps):
-        game.next()
-    file_output(game)
+    output(ans, game)
