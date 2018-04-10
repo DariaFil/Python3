@@ -6,8 +6,8 @@ def test_init_and_full1():
     g.set_game(1, 2, 1)
     a = ["f", "f"]
     g.full(0, a)
-    assert (g.height == 1 and g.length == 2 and g.steps == 1)
-    assert g.arr == [["f", "f"]]
+    assert (g.height == 1 and g.length == 2 and g.steps == 1), "Init1 not passed"
+    assert g.arr == [["f", "f"]], "Full1 not passed"
 
 
 def test_init_and_full2():
@@ -17,8 +17,8 @@ def test_init_and_full2():
     a2 = ["n", "f", "n"]
     g.full(0, a1)
     g.full(1, a2)
-    assert (g.height == 2 and g.length == 3 and g.steps == 1)
-    assert g.arr == [["f", "f", "f"], ["n", "f", "n"]]
+    assert (g.height == 2 and g.length == 3 and g.steps == 1), "Init2 not passed"
+    assert g.arr == [["f", "f", "f"], ["n", "f", "n"]], "Full2 not passed"
 
 
 def test_count1():
@@ -33,7 +33,7 @@ def test_count1():
     for i in range(2):
         for j in range(3):
             b[i][j] = g.count(i, j, "f")
-    assert b == [[2, 3, 2], [3, 3, 3]]
+    assert b == [[2, 3, 2], [3, 3, 3]], "Count1 not passed"
 
 
 def test_count2():
@@ -49,11 +49,11 @@ def test_count2():
     for i in range(3):
         for j in range(4):
             b[i][j] = g.count(i, j, "f")
-    assert b == [[2, 2, 3, 0], [4, 3, 3, 1], [1, 2, 1, 0]]
+    assert b == [[2, 2, 3, 0], [4, 3, 3, 1], [1, 2, 1, 0]], "Count2_1 not passed"
     for i in range(3):
         for j in range(4):
             b[i][j] = g.count(i, j, "s")
-    assert b == [[0, 0, 1, 1], [1, 2, 4, 2], [1, 1, 3, 2]]
+    assert b == [[0, 0, 1, 1], [1, 2, 4, 2], [1, 1, 3, 2]], "Count2_2 not passed"
 
 
 def test_count3():
@@ -69,11 +69,11 @@ def test_count3():
     for i in range(3):
         for j in range(3):
             b[i][j] = g.count(i, j, "f")
-    assert b == [[2, 3, 2], [3, 3, 3], [1, 1, 1]]
+    assert b == [[2, 3, 2], [3, 3, 3], [1, 1, 1]], "Count3_1 not passed"
     for i in range(3):
         for j in range(3):
             b[i][j] = g.count(i, j, "s")
-    assert b == [[0, 0, 0], [2, 3, 2], [1, 2, 1]]
+    assert b == [[0, 0, 0], [2, 3, 2], [1, 2, 1]], "Count3_2 not passed"
 
 
 def test_objects_update1():
@@ -89,13 +89,13 @@ def test_objects_update1():
     ocean = lib.Ocean()
     shrimp = lib.Shrimp()
     rock = lib.Rock()
-    assert rock.update(g, 0, 2) == rock
-    assert ocean.update(g, 1, 0) == ocean
-    assert ocean.update(g, 1, 2) == fish
-    assert fish.update(g, 0, 3) == ocean
-    assert fish.update(g, 0, 0) == fish
-    assert shrimp.update(g, 2, 2) == shrimp
-    assert shrimp.update(g, 2, 1) == ocean
+    assert rock.update(g, 0, 2) == rock, "Update_rock not passed"
+    assert ocean.update(g, 1, 0) == ocean, "Update_ocean1_1 not passed"
+    assert ocean.update(g, 1, 2) == fish, "Update_ocean1_2 not passed"
+    assert fish.update(g, 0, 3) == ocean, "Update_fish1_1 not passed"
+    assert fish.update(g, 0, 0) == fish, "Update_fish1_2 not passed"
+    assert shrimp.update(g, 2, 2) == shrimp, "Update_shrimp1_1 not passed"
+    assert shrimp.update(g, 2, 1) == ocean, "Update_shrimp1_2 not passed"
 
 
 def test_objects_update2():
@@ -110,11 +110,11 @@ def test_objects_update2():
     fish = lib.Fish()
     ocean = lib.Ocean()
     shrimp = lib.Shrimp()
-    assert ocean.update(g, 1, 0) == fish
-    assert fish.update(g, 0, 2) == fish
-    assert fish.update(g, 0, 1) == fish
-    assert shrimp.update(g, 2, 2) == ocean
-    assert shrimp.update(g, 2, 1) == shrimp
+    assert ocean.update(g, 1, 0) == fish, "Update_ocean2_1 not passed"
+    assert fish.update(g, 0, 2) == fish, "Update_fish2_1 not passed"
+    assert fish.update(g, 0, 1) == fish, "Update_fish2_2 not passed"
+    assert shrimp.update(g, 2, 2) == ocean, "Update_shrimp2_1 not passed"
+    assert shrimp.update(g, 2, 1) == shrimp, "Update_shrimp2_2 not passed"
 
 
 def test_next1():
@@ -126,9 +126,9 @@ def test_next1():
     for i in range(2):
         g.full(i, a[i])
     g.next()
-    assert g.arr == [["f", "f", "f"], ["f", "f", "f"]]
+    assert g.arr == [["f", "f", "f"], ["f", "f", "f"]], "Next1_1 not passed"
     g.next()
-    assert g.arr == [["f", "n", "f"], ["f", "n", "f"]]
+    assert g.arr == [["f", "n", "f"], ["f", "n", "f"]], "Next1_2 not passed"
 
 
 def test_next2():
@@ -141,7 +141,7 @@ def test_next2():
     for i in range(3):
         g.full(i, a[i])
     g.next()
-    assert g.arr == [["f", "f", "r", "n"], ["n", "f", "f", "s"], ["n", "n", "s", "s"]]
+    assert g.arr == [["f", "f", "r", "n"], ["n", "f", "f", "s"], ["n", "n", "s", "s"]], "Next2 not passed"
 
 
 def test_next3():
@@ -155,7 +155,7 @@ def test_next3():
         g.full(i, a[i])
     g.next()
     g.next()
-    assert g.arr == [["f", "n", "f"], ["f", "n", "f"], ["n", "n", "n"]]
+    assert g.arr == [["f", "n", "f"], ["f", "n", "f"], ["n", "n", "n"]], "Next3 not passed"
 
 
 def test():
