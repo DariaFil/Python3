@@ -7,41 +7,41 @@ class Object:
         pass
 
     def __eq__(self, other):
-        if self.code() == other.code():
+        if self.object_code() == other.object_code():
             return True
         else:
             return False
 
     def __hash__(self):
-        return self.code()
+        return self.object_code()
 
     '''Возвращние кода объекта, позволяющее переопределить равенство объектов и их хэширование.
         Код для каждого объекта уникален, метод переопределён в каждом из потомков'''
-    def code(self):
+    def object_code(self):
         pass
 
     '''Функция поведения объекта при изменении состояния поля, переопределённая в каждом из потомков'''
-    def update(self, life, i, j):
+    def update_cell(self, life, i, j):
         pass
 
 
 '''Класс ячейки со скалами'''
 class Rock(Object):
-    def code(self):
+    def object_code(self):
         return 1
 
-    def update(self, life, i, j):
+    def update_cell(self, life, i, j):
         rock = Rock()
         return rock
 
 
 '''Класс ячейки с рыбой'''
 class Fish(Object):
-    def code(self):
+    def object_code(self):
         return 2
 
-    def update(self, life, i, j):
-        if life.count(i, j, 'f') > 3 or life.count(i, j, 'f') < 2:
+    def update_cell(self, life, i, j):
+        if life.count_neighbors(i, j, 'f') > 3 or life.count_neighbors(i, j, 'f') < 2:
             ocean = Ocean()
             return ocean
         else:
@@ -51,14 +51,14 @@ class Fish(Object):
 
 '''Класс ячейки пустого океана'''
 class Ocean(Object):
-    def code(self):
+    def object_code(self):
         return 0
 
-    def update(self, life, i, j):
-        if life.count(i, j, 'f') == 3:
+    def update_cell(self, life, i, j):
+        if life.count_neighbors(i, j, 'f') == 3:
             fish = Fish()
             return fish
-        elif life.count(i, j, 's') == 3:
+        elif life.count_neighbors(i, j, 's') == 3:
             shrimp = Shrimp()
             return shrimp
         else:
@@ -68,11 +68,11 @@ class Ocean(Object):
 
 '''Класс ячейки с креветкой'''
 class Shrimp(Object):
-    def code(self):
+    def object_code(self):
         return 3
 
-    def update(self, life, i, j):
-        if life.count(i, j, 's') > 3 or life.count(i, j, 's') < 2:
+    def update_cell(self, life, i, j):
+        if life.count_neighbors(i, j, 's') > 3 or life.count_neighbors(i, j, 's') < 2:
             ocean = Ocean()
             return ocean
         else:
@@ -91,8 +91,8 @@ class CLifegame(object):
         self.def_fish = Fish()
         self.def_shrimp = Shrimp()
         '''Словари для преобразования символа поля в класс объекта, заданного этим символом, и обратно'''
-        self.diction = {"n": self.def_ocean, "r": self.def_rock, "f": self.def_fish, "s": self.def_shrimp}
-        self.undiction = {self.def_ocean: "n", self.def_rock: "r", self.def_fish: "f", self.def_shrimp: "s"}
+        self.dictSymbol_to_object = {"n": self.def_ocean, "r": self.def_rock, "f": self.def_fish, "s": self.def_shrimp}
+        self.dictObject_to_symbol = {self.def_ocean: "n", self.def_rock: "r", self.def_fish: "f", self.def_shrimp: "s"}
 
     '''Инициация параметорв поля'''
     def set_game(self, height, length, steps):
@@ -102,72 +102,72 @@ class CLifegame(object):
         self.arr = [[None]*length for i in range(height)]
 
     '''Заполнение масиива поля игры'''
-    def full(self, i, d):
+    def full_field(self, i, d):
         self.arr[i] = d
 
     '''Проверка существования ячейки с данными координатами'''
-    def exist(self, i, j):
+    def is_field_cell_exist(self, i, j):
         if 0 <= i < self.height and 0 <= j < self.length:
             return True
         else:
             return False
 
     '''Подсчёт соседей того же типа, что и объект в данной ячейке'''
-    def count(self, i, j, d):
+    def count_neighbors(self, x, y, obj):
         c = 0
-        for i_inc in range(-1, 2):
-            for j_inc in range(-1, 2):
-                if not(i_inc == 0 and j_inc == 0):
-                    if self.exist(i + i_inc, j + j_inc) and self.arr[i + i_inc][j + j_inc] == d:
+        for x_inc in range(-1, 2):
+            for y_inc in range(-1, 2):
+                if not(x_inc == 0 and y_inc == 0):
+                    if self.is_field_cell_exist(x + x_inc, y + y_inc) and self.arr[x + x_inc][y + y_inc] == obj:
                         c += 1
         return c
 
     '''Переход к следующему состоянию океана'''
-    def next(self):
-        arr2 = [[None]*self.length for l in range(self.height)]
+    def next_game_state(self):
+        next_state_arr = [[None]*self.length for l in range(self.height)]
         for i in range(self.height):
             for j in range(self.length):
-                obj = self.diction[self.arr[i][j]]
-                arr2[i][j] = self.undiction[obj.update(self, i, j)]
+                obj = self.dictSymbol_to_object[self.arr[i][j]]
+                next_state_arr[i][j] = self.dictObject_to_symbol[obj.update(self, i, j)]
 
-        self.arr = arr2
+        self.arr = next_state_arr
 
 
 def input(ans):
-    f = sys.stdin
+    input_file = sys.stdin
     if ans == "file":
-        f = open('input.txt', 'r')
-    l = []
+        input_file = open('input.txt', 'r')
+    list_of_arguments = []
     i = -1
     cgame = CLifegame()
-    for line in f:
+    for line in input_file:
         if i == -1:
-            l = list(line.split())
-            cgame.set_game(int(l[0]), int(l[1]), int(l[2]))
+            list_of_arguments = list(line.split())
+            cgame.set_game(int(list_of_arguments[0]), int(list_of_arguments[1]), int(list_of_arguments[2]))
             i += 1
         else:
-            l = list(line)
-            cgame.full(i, l)
+            list_of_arguments = list(line)
+            cgame.full_field(i, list_of_arguments)
             i += 1
     if ans == "file":
-        f.close()
+        input_file.close()
     return cgame
 
 
 def output(ans, cgame):
-    f = sys.stdout
+    output_file = sys.stdout
     if ans == "file":
-        f = open('output.txt', 'w')
+        output_file = open('output.txt', 'w')
     for i in range(cgame.height):
         for j in range(cgame.length):
-            f.write(cgame.arr[i][j])
-        f.write('\n')
+            output_file.write(cgame.arr[i][j])
+        output_file.write('\n')
     if ans == "file":
-        f.close()
+        output_file.close()
 
 
 def run(ans):
     game = input(ans)
-    for i1 in range(game.steps):
-        game.next()
+    for i in range(game.steps):
+        game.next_game_state()
     output(ans, game)
