@@ -1,6 +1,3 @@
-import sys
-
-
 '''Общий абстрактный класс объектов поля'''
 class Object:
     def __init__(self):
@@ -81,11 +78,10 @@ class Shrimp(Object):
 
 
 class CLifegame(object):
-    def __init__(self):
-        self.height = 0
-        self.length = 0
-        self.steps = 0
-        self.arr = []
+    def __init__(self, _height, _length):
+        self.height = _height
+        self.length = _length
+        self.arr = [[None]*self.length for i in range(self.height)]
         self.def_ocean = Ocean()
         self.def_rock = Rock()
         self.def_fish = Fish()
@@ -94,20 +90,16 @@ class CLifegame(object):
         self.dictSymbol_to_object = {"n": self.def_ocean, "r": self.def_rock, "f": self.def_fish, "s": self.def_shrimp}
         self.dictObject_to_symbol = {self.def_ocean: "n", self.def_rock: "r", self.def_fish: "f", self.def_shrimp: "s"}
 
-    '''Инициация параметорв поля'''
-    def set_game(self, height, length, steps):
-        self.height = height
-        self.length = length
-        self.steps = steps
-        self.arr = [[None]*length for i in range(height)]
-
     '''Заполнение масиива поля игры'''
-    def full_field(self, i, d):
-        self.arr[i] = d
+    def full_field(self, x, string_of_field):
+        self.arr[x] = string_of_field
+
+    def get_cell(self, x, y):
+        return self.arr[x][y]
 
     '''Проверка существования ячейки с данными координатами'''
-    def is_field_cell_exist(self, i, j):
-        if 0 <= i < self.height and 0 <= j < self.length:
+    def is_field_cell_exist(self, x, y):
+        if 0 <= x < self.height and 0 <= y < self.length:
             return True
         else:
             return False
@@ -132,42 +124,7 @@ class CLifegame(object):
 
         self.arr = next_state_arr
 
-
-def input(ans):
-    input_file = sys.stdin
-    if ans == "file":
-        input_file = open('input.txt', 'r')
-    list_of_arguments = []
-    i = -1
-    cgame = CLifegame()
-    for line in input_file:
-        if i == -1:
-            list_of_arguments = list(line.split())
-            cgame.set_game(int(list_of_arguments[0]), int(list_of_arguments[1]), int(list_of_arguments[2]))
-            i += 1
-        else:
-            list_of_arguments = list(line)
-            cgame.full_field(i, list_of_arguments)
-            i += 1
-    if ans == "file":
-        input_file.close()
-    return cgame
-
-
-def output(ans, cgame):
-    output_file = sys.stdout
-    if ans == "file":
-        output_file = open('output.txt', 'w')
-    for i in range(cgame.height):
-        for j in range(cgame.length):
-            output_file.write(cgame.arr[i][j])
-        output_file.write('\n')
-    if ans == "file":
-        output_file.close()
-
-
-def run(ans):
-    game = input(ans)
-    for i in range(game.steps):
-        game.next_game_state()
-    output(ans, game)
+    '''Запуск игры'''
+    def play(self, steps):
+        for i in range(steps):
+            self.next_game_state()
