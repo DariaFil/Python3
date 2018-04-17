@@ -17,18 +17,15 @@ def run():
     if args.tests:
         tests.test()
     else:
-        if not(args.inputfile is None):
+        if args.inputfile is not None:
             sys.stdin = open(args.inputfile, "r")
-        height, length, steps = input().split()
-        height = int(height)
-        length = int(length)
-        steps = int(steps)
+        height, length, steps = list(map(int, input().split()))
         game = lib.CLifegame(height, length)
         for i in range(height):
             string_of_field = list(input())
             game.full_field(i, string_of_field)
         game.play(steps)
-        if not(args.outputfile is None):
+        if args.outputfile is not None:
             sys.stdout = open(args.outputfile, "w")
         for i in range(height):
             for j in range(length):
