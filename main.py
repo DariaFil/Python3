@@ -6,9 +6,9 @@ import sys
 
 def set_parser_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--inputfile', action='store')
-    parser.add_argument('--outputfile', action='store')
-    parser.add_argument('--tests', action='store_true')
+    parser.add_argument('--inputfile', action='store') #Имя входного файла
+    parser.add_argument('--outputfile', action='store') #Имя выходного поля
+    parser.add_argument('--tests', action='store_true') #Флаг для запуска тестов
     return parser.parse_args()
 
 
@@ -19,10 +19,10 @@ def run():
     else:
         if args.inputfile is not None:
             sys.stdin = open(args.inputfile, "r")
-        height, length, steps = list(map(int, input().split()))
-        game = lib.CLifegame(height, length)
+        height, length, steps = list(map(int, input().split())) #Высота, длина игрового поля и количество итераций игры
+        game = lib.CLifegame(height, length) #Непосрадственоо игра
         for i in range(height):
-            string_of_field = list(input())
+            string_of_field = list(input()) #Строка игрового поля
             game.full_field(i, string_of_field)
         game.play(steps)
         if args.outputfile is not None:

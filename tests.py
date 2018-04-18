@@ -1,7 +1,7 @@
 import lib
 
 
-def test_init_and_full1():
+def test_init_and_full1(): #Тестирование инициации и заполнения массива поля, тест 1
     g = lib.CLifegame(1, 2)
     a = ["f", "f"]
     g.full_field(0, a)
@@ -9,7 +9,7 @@ def test_init_and_full1():
     assert g.game_field == [["f", "f"]], "full_field1 not passed"
 
 
-def test_init_and_full():
+def test_init_and_full(): #Тестирование инициации и заполнения массива поля, тест 2
     g = lib.CLifegame(2, 3)
     a1 = ["f", "f", "f"]
     a2 = ["n", "f", "n"]
@@ -19,7 +19,7 @@ def test_init_and_full():
     assert g.game_field == [["f", "f", "f"], ["n", "f", "n"]], "full_field2 not passed"
 
 
-def test_count_neighbours1():
+def test_count_neighbours1(): #Тестирование функции подсчёта соседей, тест 1
     g = lib.CLifegame(2, 3)
     a = [[None]*3 for i in range(2)]
     a[0] = ["f", "f", "f"]
@@ -33,7 +33,7 @@ def test_count_neighbours1():
     assert b == [[2, 3, 2], [3, 3, 3]], "count_neighbours1 not passed"
 
 
-def test_count_neighbours2():
+def test_count_neighbours2(): #Тестирование функции подсчёта соседей, тест 2
     g = lib.CLifegame(3, 4)
     a = [[None]*4 for i in range(3)]
     a[0] = ["f", "f", "r", "f"]
@@ -52,7 +52,7 @@ def test_count_neighbours2():
     assert b == [[0, 0, 1, 1], [1, 2, 4, 2], [1, 1, 3, 2]], "count_neighbours2_2 not passed"
 
 
-def test_count_neighbours3():
+def test_count_neighbours3(): #Тестирование функции подсчёта соседей, тест 3
     g = lib.CLifegame(3, 3)
     a = [[None]*3 for i in range(3)]
     a[0] = ["f", "f", "f"]
@@ -71,7 +71,7 @@ def test_count_neighbours3():
     assert b == [[0, 0, 0], [2, 3, 2], [1, 2, 1]], "count_neighbours3_2 not passed"
 
 
-def test_objects_update_cell1():
+def test_objects_update_cell1(): #Тестирование функции объектов поля: обновление яцейки при новой игровой итерации, тест 1
     g = lib.CLifegame(3, 4)
     a = [[None]*4 for i in range(3)]
     a[0] = ["f", "f", "r", "f"]
@@ -92,7 +92,7 @@ def test_objects_update_cell1():
     assert shrimp.update_cell(g, 2, 1) == ocean, "update_cell_shrimp1_2 not passed"
 
 
-def test_objects_update_cell2():
+def test_objects_update_cell2(): #Тестирование функции объектов поля: обновление яцейки при новой игровой итерации, тест 2
     g = lib.CLifegame(3, 3)
     a = [[None]*3 for i in range(3)]
     a[0] = ["f", "f", "f"]
@@ -109,8 +109,7 @@ def test_objects_update_cell2():
     assert shrimp.update_cell(g, 2, 2) == ocean, "update_cell_shrimp2_1 not passed"
     assert shrimp.update_cell(g, 2, 1) == shrimp, "update_cell_shrimp2_2 not passed"
 
-
-def test_next1():
+def test_next1(): #Тестирование поведения игры при переходе в очередное состояние, тест 1
     g = lib.CLifegame(2, 3)
     a = [[None]*3 for i in range(2)]
     a[0] = ["f", "f", "f"]
@@ -123,7 +122,7 @@ def test_next1():
     assert g.game_field == [["f", "n", "f"], ["f", "n", "f"]], "Next1_2 not passed"
 
 
-def test_next2():
+def test_next2(): #Тестирование поведения игры при переходе в очередное состояние, тест 2
     g = lib.CLifegame(3, 4)
     a = [[None]*4 for i in range(3)]
     a[0] = ["f", "f", "r", "f"]
@@ -135,7 +134,7 @@ def test_next2():
     assert g.game_field == [["f", "f", "r", "n"], ["n", "f", "f", "s"], ["n", "n", "s", "s"]], "Next2 not passed"
 
 
-def test_next3():
+def test_next3(): #Тестирование поведения игры при переходе в очередное состояние, тест 3
     g = lib.CLifegame(3, 3)
     a = [[None]*3 for i in range(3)]
     a[0] = ["f", "f", "f"]
@@ -147,7 +146,7 @@ def test_next3():
     assert g.game_field == [["f", "n", "f"], ["f", "n", "f"], ["n", "n", "n"]], "Next3 not passed"
 
 
-def test():
+def test(): #Воспроизведение всех тестов
     test_init_and_full()
     test_init_and_full()
     test_count_neighbours1()
