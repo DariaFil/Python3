@@ -85,7 +85,7 @@ class Shrimp(PlayingObject):
         neighbours = game.return_neighbours(x, y)  # Массив объектов-соседей
         shrimp_count = 0  # Количество креветок среди соседей
         for i in neighbours:
-            if i == Fish():
+            if i == Shrimp():
                 shrimp_count += 1
         if 1 < shrimp_count < 4:
             return Shrimp()
