@@ -205,5 +205,3 @@ def test():
     test_next2()
     test_next3()
     test_factory()
-
-test()
