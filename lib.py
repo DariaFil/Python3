@@ -1,8 +1,8 @@
 class PlayingObject:
     """
-Общий абстрактный класс объектов поля
-object_code - код объекта, позволяющий переопределить равенство объектов и их хэширование.
-Код для каждого объекта уникален
+    Общий абстрактный класс объектов поля
+    object_code - код объекта, позволяющий переопределить равенство объектов и их хэширование.
+    Код для каждого объекта уникален
     """
 
     symbol = ''
@@ -26,69 +26,58 @@ object_code - код объекта, позволяющий переопреде
 
 class Ocean(PlayingObject):
     """
-Класс ячейки пустого океана
+    Класс ячейки пустого океана
     """
     symbol = "n"
 
     def update_cell(self, game, x, y):
-        neighbours = game.return_neighbours(x, y)  # Массив объектов-соседей
-        fish_count = 0  # Количество рыб среди соседей
-        shrimp_count = 0  # Количество креветок среди соседей
-        for i in neighbours:
-            if i == Fish():
-                fish_count += 1
-            elif i == Shrimp:
-                shrimp_count += 1
+        neighbours = game.return_neighbours(x, y)  # Словарь количества объектов-соседей
+        fish_count = neighbours[Fish().symbol]  # Количество рыб среди соседей
+        shrimp_count = neighbours[Shrimp().symbol]  # Количество креветок среди соседей
         if fish_count == 3:
             return Fish()
         elif shrimp_count == 3:
             return Shrimp()
         else:
-            return Ocean()
+            return self
 
 
 class Rock(PlayingObject):
     """
-Класс ячейки со скалами
+    Класс ячейки со скалами
     """
     symbol = "r"
 
     def update_cell(self, game, x, y):
-        return Rock()
+        return self
 
 
 class Fish(PlayingObject):
     """
-Класс ячейки с рыбой
+    Класс ячейки с рыбой
     """
     symbol = "f"
 
     def update_cell(self, game, x, y):
-        neighbours = game.return_neighbours(x, y)  # Массив объектов-соседей
-        fish_count = 0  # Количество рыб среди соседей
-        for i in neighbours:
-            if i == Fish():
-                fish_count += 1
+        neighbours = game.return_neighbours(x, y)  # Словарь количества объектов-соседей
+        fish_count = neighbours[Fish().symbol]  # Количество рыб среди соседей
         if 1 < fish_count < 4:
-            return Fish()
+            return self
         else:
             return Ocean()
 
 
 class Shrimp(PlayingObject):
     """
-Класс ячейки с креветкой
+    Класс ячейки с креветкой
     """
     symbol = "s"
 
     def update_cell(self, game, x, y):
-        neighbours = game.return_neighbours(x, y)  # Массив объектов-соседей
-        shrimp_count = 0  # Количество креветок среди соседей
-        for i in neighbours:
-            if i == Shrimp():
-                shrimp_count += 1
+        neighbours = game.return_neighbours(x, y)  # Словарь количества объектов-соседей
+        shrimp_count = neighbours[Shrimp().symbol]  # Количество креветок среди соседей
         if 1 < shrimp_count < 4:
-            return Shrimp()
+            return self
         else:
             return Ocean()
 
@@ -96,10 +85,14 @@ class Shrimp(PlayingObject):
 class Factory:
     """
     Фабрика игровых объектов
-    Метод __init__ инициирует массив игровых объектов - потомков PlayingObject
+    Метод __init__ инициирует словарь игровых объектов, потомков PlayingObject, с доступом по символу
+    Таким образом, основное время тратится на создание словаря фабрики, а возвращение объекта происходит быстро
     """
     def __init__(self):
-        self.object_list = PlayingObject.__subclasses__()  # Массив слабых ссылок на все типы игровых объектов
+        object_list = PlayingObject.__subclasses__()  # Массив слабых ссылок на все типы игровых объектов
+        self.object_dict = {}
+        for i in range(len(object_list)):
+            self.object_dict.update({object_list[i].symbol: object_list[i]})
 
     def get_object(self, symbol):
         """
@@ -107,17 +100,14 @@ class Factory:
         :param symbol: символ объекта
         :return: игровой объект
         """
-        i = 0
-        while self.object_list[i].symbol != symbol:
-            i += 1
-        return self.object_list[i]()
+        return self.object_dict[symbol]()
 
 
 class LifeGame:
     """
-Класс игры
-Метод __init__ задаётся высотой поля и длиной поля и инициирует, помимо
-параметров, поле игры в незаполненном варианте
+    Класс игры
+    Метод __init__ задаётся высотой поля и длиной поля и инициирует, помимо
+    параметров, поле игры в незаполненном варианте
     """
     def __init__(self, _height, _length):
         self.height = _height  # Высота игрового поля
@@ -155,18 +145,19 @@ class LifeGame:
 
     def return_neighbours(self, x, y):
         """
-        Подсчёт соседей того же типа, что и объект в данной ячейке
+        Подсчёт количества соседей разных типов
         :param x: х-координата клетки
         :param y: у-координата клетки
         :return: количество соседей данного типа объектов
         """
-        neighbours_counts = []  # Массив соседей-объектов
+        neighbours_types = dict.fromkeys([obj.symbol for obj in PlayingObject.__subclasses__()], 0)  # Словарь, содержащий количество объектов-соседей какого-либо типа
         for x_inc in range(-1, 2):
             for y_inc in range(-1, 2):
                 if not(x_inc == 0 and y_inc == 0):
                     if self.__is_field_cell_exist(x + x_inc, y + y_inc):
-                        neighbours_counts.append(self.game_field[x + x_inc][y + y_inc])
-        return neighbours_counts
+                        cell_object = self.game_field[x + x_inc][y + y_inc]
+                        neighbours_types[cell_object.symbol] += 1
+        return neighbours_types
 
     def __next_game_state(self):
         """
