@@ -15,7 +15,9 @@ def parse_topics(topic):
 
 
 def parse_doc(topic, doc, is_new_topic):
-    doc_url = doc.find('a', {'class': 'item__link no-injects js-yandex-counter'})['href'].strip()
+    doc_url_block = doc.find('a',
+                       {'class': 'item__link no-injects js-yandex-counter'})
+    doc_url = doc_url_block['href'].strip()
     doc_title = doc.find('span', {'class': 'item__title'}).text.strip()
     doc_time = doc.find('span', {'class': 'item__info'}).text.strip()
     update_time = dateparser.parse(doc_time)
@@ -24,7 +26,11 @@ def parse_doc(topic, doc, is_new_topic):
     text = parse_text(doc_text)
     real_doc = db_commands.search_doc(doc_title)
     if real_doc is None:
-        real_doc = db_commands.add_document(topic, doc_title, doc_url, update_time, text)
+        real_doc = db_commands.add_document(topic,
+                                            doc_title,
+                                            doc_url,
+                                            update_time,
+                                            text)
         tag_data = BeautifulSoup(requests.get(real_doc.url).text, 'lxml')
         tags_block = tag_data.find('div', {'class': 'article__tags'})
         if tags_block is not None:
@@ -60,7 +66,8 @@ def parse_tag(doc, tags_block):
 
 
 def parse():
-    data = BeautifulSoup(requests.get("https://www.rbc.ru/story/").text, 'lxml')
+    data = BeautifulSoup(requests.get("https://www.rbc.ru/story/").text,
+                         'lxml')
     topics = data.find_all('div', {'class': 'item item_story js-story-item'})
     print(len(topics))
     for topic in topics:
@@ -70,8 +77,9 @@ def parse():
         else:
             print(real_topic.name)
         new_upd_time = dateparser.parse('1000-01-01')
-        doc_data = BeautifulSoup(requests.get(real_topic.url).text, 'lxml')
-        docs = doc_data.find_all('div', {'class': 'item item_story-single js-story-item'})
+        data = BeautifulSoup(requests.get(real_topic.url).text, 'lxml')
+        docs = data.find_all('div',
+                            {'class': 'item item_story-single js-story-item'})
         print(len(docs))
         for doc in docs:
             new_time, db_doc = parse_doc(real_topic, doc, is_new)

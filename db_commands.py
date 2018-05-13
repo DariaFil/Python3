@@ -6,7 +6,8 @@ import re
 
 
 def add_topic(topic, url, desc):
-    new_topic = Topic.create(name=topic, url=url, description=desc, last_update_time=dateparser.parse('1000-01-01'))
+    new_topic = Topic.create(name=topic, url=url, description=desc,
+                             last_update_time=dateparser.parse('1000-01-01'))
     new_topic.save()
     return new_topic
 
@@ -126,13 +127,13 @@ def search_topic_tags(topic):
     return tag_list
 
 
-def do_plot(data, label, xlabel, ylabel, view):
+def do_plot(data, title, x_label, y_label):
     data_frame = pandas.DataFrame(data)
-    plot = data_frame.plot(kind=view,
-                           title=label,
+    plot = data_frame.plot(kind='line',
+                           title=title,
                            colormap='jet')
-    plot.set_xlabel(xlabel)
-    plot.set_ylabel(ylabel)
+    plot.set_xlabel(x_label)
+    plot.set_ylabel(y_label)
     return plot
 
 
@@ -148,20 +149,18 @@ def word_stat_plot(file, word_dict, len_dict):
     count_freq = [0 for i in range(max_freq + 1)]
     for words in word_dict.values():
         count_freq[words] += 1
-    file1 = file + '1.png'
-    file2 = file + '2.png'
+    file1 = file + '-1.png'
+    file2 = file + '-2.png'
     do_plot(count_len,
-              "Распределение длин слов",
+              'Распределение длин слов',
               'Длина слова',
-              'Количество слов с этой длиной',
-              "line")
+              'Количество слов с этой длиной')
     matplotlib.pyplot.savefig(file1)
     matplotlib.pyplot.close()
     do_plot(count_freq,
-              "Распределение слов",
-              'Слова',
-              'Количество слов',
-              "line")
+              'Распределение слов',
+              'Частота возникновения слова',
+              'Количество слов')
     matplotlib.pyplot.savefig(file2)
     matplotlib.pyplot.close()
     return file1, file2
