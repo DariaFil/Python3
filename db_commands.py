@@ -137,22 +137,24 @@ def do_plot(data, label, xlabel, ylabel, view):
 
 
 def word_stat_plot(file, word_dict, len_dict):
-    keys = [int(x) for x in len_dict.keys()]
-    len_max = max(keys)
+    len_max = max(len_dict.keys())
     count_len = [0 for i in range(len_max + 1)]
     for i in range(1, len_max + 1):
-        if str(i) in len_dict.keys():
-            count_len[i] = len_dict[str(i)]
+        if i in len_dict.keys():
+            count_len[i] = len_dict[i]
         else:
             count_len[i] = 0
-    count_freq = sorted(word_dict.values())
+    max_freq = max(word_dict.values())
+    count_freq = [0 for i in range(max_freq + 1)]
+    for words in word_dict.values():
+        count_freq[words] += 1
     file1 = file + '1.png'
     file2 = file + '2.png'
     do_plot(count_len,
               "Распределение длин слов",
               'Длина слова',
               'Количество слов с этой длиной',
-              "bar")
+              "line")
     matplotlib.pyplot.savefig(file1)
     matplotlib.pyplot.close()
     do_plot(count_freq,
