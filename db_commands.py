@@ -1,4 +1,4 @@
-from Database_tables import Topic, Document, Tag
+from db_tables import Topic, Document, Tag
 import pandas
 import matplotlib.pyplot
 import dateparser
@@ -13,11 +13,10 @@ def add_topic(topic, url, desc):
 
 
 def search_topic(topic):
-    try:
-        exist_topic = Topic.get(Topic.name == topic)
-    except:
+    exist_topic = Topic.select().where(Topic.name == topic)
+    if len(exist_topic) == 0:
         return None
-    return exist_topic
+    return exist_topic[0]
 
 
 def search_last_topic(n):
@@ -47,9 +46,8 @@ def add_document(topic, doc_name, url, time, text):
 
 
 def search_doc(doc):
-    try:
-        exist_doc = Document.get(Document.name == doc)
-    except:
+    exist_doc = Document.select().where(Document.name == doc)
+    if len(exist_doc) == 0:
         return None
     return exist_doc
 
@@ -98,9 +96,8 @@ def add_tag(doc, tag):
 
 
 def search_tag(doc, tag):
-    try:
-        exist_tag = Tag.get(Tag.name == tag and Tag.document == doc)
-    except:
+    exist_tag = Tag.select().where(Tag.name == tag and Tag.document == doc)
+    if len(exist_tag) == 0:
         return None
     return exist_tag
 
@@ -129,9 +126,7 @@ def search_topic_tags(topic):
 
 def do_plot(data, title, x_label, y_label):
     data_frame = pandas.DataFrame(data)
-    plot = data_frame.plot(kind='line',
-                           title=title,
-                           colormap='jet')
+    plot = data_frame.plot(kind='line', title=title)
     plot.set_xlabel(x_label)
     plot.set_ylabel(y_label)
     return plot
@@ -152,15 +147,15 @@ def word_stat_plot(file, word_dict, len_dict):
     file1 = file + '-1.png'
     file2 = file + '-2.png'
     do_plot(count_len,
-              'Распределение длин слов',
-              'Длина слова',
-              'Количество слов с этой длиной')
+            'Распределение длин слов',
+            'Длина слова',
+            'Количество слов с этой длиной')
     matplotlib.pyplot.savefig(file1)
     matplotlib.pyplot.close()
     do_plot(count_freq,
-              'Распределение слов',
-              'Частота возникновения слова',
-              'Количество слов')
+            'Распределение слов',
+            'Частота возникновения слова',
+            'Количество слов')
     matplotlib.pyplot.savefig(file2)
     matplotlib.pyplot.close()
     return file1, file2
