@@ -136,10 +136,10 @@ def length_statistics(word_dict):
 def do_plot(data, title, x_label, y_label, kind):
     if kind == 'bar':
         data_frame = pandas.DataFrame(data)
-        plot = data_frame.plot(kind=kind, title=title, label=u"Длины слов")
-        matplotlib.pyplot.grid(True)
+        plot = data_frame.plot(kind=kind, title=title)
         plot.set_xlabel(x_label)
         plot.set_ylabel(y_label)
+        matplotlib.pyplot.legend('')
     else:
         data_series = pandas.Series(data, name=' ')
         plot = data_series.plot.pie(title=title)
