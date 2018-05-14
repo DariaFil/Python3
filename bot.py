@@ -2,6 +2,7 @@ from telebot import TeleBot
 import bot_commands
 import re
 
+default_new_number = '5'
 users = dict()
 bot = TeleBot('521302347:AAFWdv5Udnk8Iz6_SvaoyoIscwwinvJd1qk')
 
@@ -21,6 +22,14 @@ def do_command(message, user_text):
     if users[message.chat.id].action == 'start':
         bot.send_message(message.chat.id,
                          'Введите команду')
+    if users[message.chat.id].action == 'doc':
+        doc_name = message.text
+        doc_text = bot_commands.doc(doc_name)
+        if doc_text is None:
+            bot.send_message(message.chat.id,
+                             'Статья отсутствует в моей базе данных')
+        else:
+            bot.send_message(message.chat.id, doc_text)
     if users[message.chat.id].action == 'topic':
         description, docs_list = bot_commands.topic(user_text)
         if description is None:
@@ -30,14 +39,6 @@ def do_command(message, user_text):
             bot.send_message(message.chat.id, description)
             for current_doc in docs_list:
                 bot.send_message(message.chat.id, current_doc)
-    if users[message.chat.id].action == 'doc':
-        doc_name = message.text
-        doc_text = bot_commands.doc(doc_name)
-        if doc_text is None:
-            bot.send_message(message.chat.id,
-                             'Статья отсутствует в моей базе данных')
-        else:
-            bot.send_message(message.chat.id, doc_text)
     if users[message.chat.id].action == 'new_docs':
         docs_list = bot_commands.new_docs(user_text)
         if docs_list is None:
@@ -47,7 +48,7 @@ def do_command(message, user_text):
             for current_doc in docs_list:
                 bot.send_message(message.chat.id, current_doc)
     if users[message.chat.id].action == 'new_topics':
-        topics_list = bot_commands.new_docs(user_text)
+        topics_list = bot_commands.new_topics(user_text)
         if topics_list is None:
             bot.send_message(message.chat.id,
                              'Тема отсутствует в моей базе данных')
@@ -90,42 +91,8 @@ def do_command(message, user_text):
                              'Тема отсутствует в моей базе данных')
 
 
-@bot.message_handler(commands=['start'])
-def handle_start(message):
-    set_user(message.chat.id)
-    print(message.text, message.chat.first_name, message.chat.last_name)
-    bot.send_message(message.chat.id,
-                     '''Привет! Я новостной бот
-                        и готов показать свежие новости.
-                        Чтобы прочесть список команд, введите /help''')
-    users[message.chat.id].action = 'start'
-
-
-@bot.message_handler(commands=['help'])
-def handle_help(message):
-    set_user(message.chat.id)
-    print(message.text, message.chat.first_name, message.chat.last_name)
-    bot.send_message(message.chat.id,
-                     '''/help - список команд\n
-                        /start - начать общение с ботом\n
-                        /new_docs - показать последние новости.
-                        Параметр - количество статей\n
-                        /new_topics - показать последние обновившиеся темы.
-                        Параметр - количество тем\n
-                        /topic - показать описание темы.
-                        Параметр - название темы\n
-                        /doc - показать текст статьи.
-                        Параметр - название статьи\n
-                        /words - показать главные слова темы.
-                        Параметр - название темы\n
-                        /describe_topic - показать статистику по теме
-                        Параметр - название темы\n
-                        /describe_doc - показать статистику по статье.
-                        Параметр - название статьи''')
-    users[message.chat.id].action = 'start'
-
-
-@bot.message_handler(commands=['topic', 'doc', 'words',
+@bot.message_handler(commands=['start', 'help',
+                               'topic', 'doc', 'words',
                                'new_docs', 'new_topics',
                                'describe_topic', 'describe_doc'],
                      content_types=['text'])
@@ -137,7 +104,36 @@ def get_command(message):
     users[message.chat.id].action = user_command
     if user_text == '':
         users[message.chat.id].action = user_command
-        bot.send_message(message.chat.id, 'Введите параметр команды')
+        if user_command == 'start':
+            bot.send_message(message.chat.id,
+                             '''Привет! Я новостной бот
+                             и готов показать свежие новости.
+                             Чтобы прочесть список команд, введите /help''')
+        elif user_command == 'help':
+            bot.send_message(message.chat.id,
+                             '''/help - список команд
+                                /start - начать общение с ботом
+                                /new_docs - показать последние новости.
+                                Параметр - количество статей.
+                                По умолчанию выводится 5 самых новых статей
+                                /new_topics - показать последние обновлённые темы.
+                                Параметр - количество тем.
+                                По умолчанию выводится 5 самых новых тем
+                                /topic - показать описание темы.
+                                Параметр - название темы
+                                /doc - показать текст статьи.
+                                Параметр - название статьи
+                                /words - показать главные слова темы.
+                                Параметр - название темы
+                                /describe_topic - показать статистику по теме
+                                Параметр - название темы
+                                /describe_doc - показать статистику по статье.
+                                Параметр - название статьи''')
+        elif user_command == 'new_topics' or user_command == 'new_docs':
+            message.text = default_new_number
+            get_message(message)
+        else:
+            bot.send_message(message.chat.id, 'Введите параметр команды')
     else:
         do_command(message, user_text)
         users[message.chat.id].action = 'start'

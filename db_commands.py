@@ -80,8 +80,8 @@ def search_last_topic_docs(topic):
 
 def search_topic_tags(topic):
     tag_dict = {}
-    tag_list = ['' for i in range(5)]
-    count_list = [0 for i in range(5)]
+    tag_list = ['']*5
+    count_list = [0]*5
     for doc in topic.documents:
         for tag in doc.tags:
             if tag_dict.get(tag.name) is None:
@@ -148,7 +148,7 @@ def do_plot(data, title, x_label, y_label, kind):
 
 def words_plot(file, word_dict, len_dict):
     len_max = max(len_dict.keys())
-    count_len = [0 for i in range(len_max + 1)]
+    count_len = [0]*(len_max + 1)
     for word_length in range(1, len_max + 1):
         if word_length in len_dict.keys():
             count_len[word_length] = len_dict[word_length]
