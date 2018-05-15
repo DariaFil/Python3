@@ -5,7 +5,7 @@ import re
 def topic(topic_name):
     current_topic = db_commands.search_topic(topic_name)
     if current_topic is None:
-        return None
+        return None, None
     else:
         description = current_topic.description
         docs_list = db_commands.search_last_topic_docs(current_topic.name)
@@ -21,7 +21,11 @@ def topic(topic_name):
 
 
 def doc(doc_name):
-    return db_commands.search_doc(doc_name)
+    real_doc = db_commands.search_doc(doc_name)
+    if real_doc is None:
+        return real_doc
+    else:
+        return real_doc.text
 
 
 def new_docs(str_number):
@@ -83,8 +87,8 @@ def describe_doc(doc_name, user_id):
         word_statistics = db_commands.doc_word_statistics(chosen_doc)
         length_statistics = db_commands.length_statistics(word_statistics)
         files = db_commands.words_plot('doc' + str(user_id),
-                                           word_statistics,
-                                           length_statistics)
+                                       word_statistics,
+                                       length_statistics)
         return files
 
 
@@ -102,6 +106,6 @@ def describe_topic(topic_name, user_id):
         word_statistics = db_commands.topic_word_statistics(chosen_topic)
         length_statistics = db_commands.length_statistics(word_statistics)
         files = db_commands.words_plot('topic' + str(user_id),
-                                           word_statistics,
-                                           length_statistics)
+                                       word_statistics,
+                                       length_statistics)
         return doc_count, avg_doc_len, files

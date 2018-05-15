@@ -10,7 +10,7 @@ today = dateparser.parse('today')
 class Topic(Model):
     name = CharField(null='')
     url = CharField(null='')
-    description = CharField(null='')
+    description = CharField(null='', default='Описание отсутствует')
     last_update_time = DateTimeField(null=today,
                                      default=default_date)
 
