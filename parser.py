@@ -17,25 +17,32 @@ tag_class = 'article__tags__link'
 
 
 def parse_topics(topic):
-    url = topic.find('a', {'class': topic_url_class})['href'].strip()
     title = topic.find('span', {'class': title_class}).text.strip()
-    description = topic.find('span', {'class': text_class}).text.strip()
+    title.replace('«', '"')
+    title.replace('»', '"')
     real_topic = db_commands.search_topic(title)
     if real_topic is None:
+        url = topic.find('a', {'class': topic_url_class})['href'].strip()
+        description = topic.find('span', {'class': text_class}).text.strip()
+        description.replace('«', '"')
+        description.replace('»', '"')
         return True, db_commands.add_topic(title, url, description)
     return False, real_topic
 
 
 def parse_doc(topic, doc, is_new_topic):
-    url = doc.find('a', {'class': doc_url_class})['href'].strip()
     title = doc.find('span', {'class': title_class}).text.strip()
+    title.replace('«', '"')
+    title.replace('»', '"')
     time = doc.find('span', {'class': time_class}).text.strip()
     update_time = dateparser.parse(time)
     print('doc', topic.name, title, time)
-    doc_text = BeautifulSoup(requests.get(url).text, 'lxml')
-    text = parse_text(doc_text)
     real_doc = db_commands.search_doc(title)
     if real_doc is None:
+        url = doc.find('a', {'class': doc_url_class})['href'].strip()
+        print(url)
+        doc_text = BeautifulSoup(requests.get(url).text, 'lxml')
+        text = parse_text(doc_text)
         real_doc = db_commands.add_document(topic, title, url,
                                             update_time, text)
         tag_data = BeautifulSoup(requests.get(real_doc.url).text, 'lxml')

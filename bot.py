@@ -27,6 +27,7 @@ help_list = '''/help - список команд
 Параметр - название статьи'''
 doc_not_exist = 'Статья отсутствует в моей базе данных'
 topic_not_exist = 'Тема отсутствует в моей базе данных'
+wrong_number = 'Некорректно указано число'
 users = dict()
 bot = TeleBot('521302347:AAFWdv5Udnk8Iz6_SvaoyoIscwwinvJd1qk')
 
@@ -62,14 +63,14 @@ def do_command(chat_id, user_text):
     if users[chat_id].action == 'new_docs':
         docs_list = bot_commands.new_docs(user_text)
         if docs_list is None:
-            bot.send_message(chat_id, doc_not_exist)
+            bot.send_message(chat_id, wrong_number)
         else:
             for current_doc in docs_list:
                 bot.send_message(chat_id, current_doc)
     if users[chat_id].action == 'new_topics':
         topics_list = bot_commands.new_topics(user_text)
         if topics_list is None:
-            bot.send_message(chat_id, topic_not_exist)
+            bot.send_message(chat_id, wrong_number)
         else:
             for current_topic in topics_list:
                 bot.send_message(chat_id, current_topic)

@@ -1,5 +1,6 @@
 import db_commands
 import re
+import string
 
 
 def topic(topic_name):
@@ -21,6 +22,8 @@ def topic(topic_name):
 
 
 def doc(doc_name):
+    doc_name.replace('«', '"')
+    doc_name.replace('»', '"')
     real_doc = db_commands.search_doc(doc_name)
     if real_doc is None:
         return real_doc
