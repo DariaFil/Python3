@@ -6,13 +6,13 @@ import dateparser
 
 # Установка дефолтных параметров
 
-default_date = dateparser.parse('1000-01-01')
+DEFAULT_DATE = dateparser.parse('1000-01-01')
 # Дефолтная дата
-last_topic_docs = 5
+LAST_TOPIC_DOCS = 5
 # Число последних документов в теме по умолчанию
-popular_tags = 5
+POPULAR_TAGS = 5
 # Количество популяных тэгов
-freq_dict_len = 10
+FREQ_DICT_LEN = 10
 # Длина словаря максимальных по встечаемости слов
 
 
@@ -37,7 +37,7 @@ def add_topic(topic, url, desc):
     """
     new_topic = Topic.create(name=topic, url=url,
                              description=desc,
-                             last_update_time=default_date)
+                             last_update_time=DEFAULT_DATE)
     # Новая тема в базе данных
     new_topic.save()
     return new_topic
@@ -157,7 +157,7 @@ def search_last_topic_docs(topic):
     # Тема из базы данных
     for doc in Document.select().where(Document.topic == topic).\
             order_by(Document.last_update_time.desc()).\
-            limit(last_topic_docs):
+            limit(LAST_TOPIC_DOCS):
         docs.append(doc)
     return docs
 
@@ -170,9 +170,9 @@ def search_topic_tags(topic):
     """
     tag_dict = {}
     # Словарь тэгов и их количества в теме
-    tag_list = [''] * popular_tags
+    tag_list = [''] * POPULAR_TAGS
     # Спикок названий самых популярных тэгов
-    count_list = [0] * popular_tags
+    count_list = [0] * POPULAR_TAGS
     # Спикок количества самых популярных тэгов
     for doc in topic.documents:
         for tag in doc.tags:
@@ -297,7 +297,7 @@ def words_plot(file, word_dict, len_dict):
     for word in word_dict.keys():
         if word_dict[word] > required_freq \
                 and len(word) > required_len \
-                and len(freq_dict) < freq_dict_len:
+                and len(freq_dict) < FREQ_DICT_LEN:
             freq_dict.update({word: word_dict[word]})
     len_file = file + '-1.png'
     # Файл с графиков частот длин слов

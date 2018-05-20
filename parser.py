@@ -5,28 +5,30 @@ import dateparser
 
 # Значения классов для объектов, которые мы будем парсить
 
-default_date = dateparser.parse('1000-01-01')
+DEFAULT_DATE = dateparser.parse('1000-01-01')
 # Дефолтная дата
-website = "https://www.rbc.ru/story/"
+WEBSITE = "https://www.rbc.ru/story/"
 # Главная страница сайта
-topic_class = 'item item_story js-story-item'
+TOPIC_CLASS = 'item item_story js-story-item'
 # Класс тем новостей
-topic_docs = 'item item_story-single js-story-item'
+TOPIC_DOCS = 'item item_story-single js-story-item'
 # Класс статей из темы
-topic_url_class = 'item__link no-injects'
+TOPIC_URL_CLASS = 'item__link no-injects'
 # Класс адреса темы
-doc_url_class = 'item__link no-injects js-yandex-counter'
+DOC_URL_CLASS = 'item__link no-injects js-yandex-counter'
 # Класс адреса статьи
-title_class = 'item__title'
+TITLE_CLASS = 'item__title'
 # Класс заголовка
-text_class = 'item__text'
+TEXT_CLASS = 'item__text'
 # Класс текста статьи
-time_class = 'item__info'
+TIME_CLASS = 'item__info'
 # Класс времени добавления
-tags_class = 'article__tags'
+TAGS_CLASS = 'article__tags'
 # Класс блока тэгов статьи
-tag_class = 'article__tags__link'
+TAG_CLASS = 'article__tags__link'
 # Класс тэга
+MAX_SESSION_COUNT = 100
+# Максимальное число сессий
 
 
 def parse_topics(topic):
@@ -36,17 +38,16 @@ def parse_topics(topic):
     :return: флаг, является ли тема новой в базе данных;
         эта тема, добавленная в базу данных
     """
-    title = topic.find('span', {'class': title_class}).text.strip()
+    title = topic.find('span', {'class': TITLE_CLASS}).text.strip()
     # Заголовок темы
     title = db_commands.clean_quotes(title)
     real_topic = db_commands.search_topic(title)
     # Результат поиска в базе данных по названию
     if real_topic is None:
-        url = topic.find('a', {'class': topic_url_class})['href'].strip()
+        url = topic.find('a', {'class': TOPIC_URL_CLASS})['href'].strip()
         # Адрес темы
-        description = topic.find('span', {'class': text_class}).text.strip()
+        description = topic.find('span', {'class': TEXT_CLASS}).text.strip()
         # Описание темы
-        description = db_commands.clean_quotes(description)
         return True, db_commands.add_topic(title, url, description)
     return False, real_topic
 
@@ -60,10 +61,10 @@ def parse_doc(topic, doc, is_new_topic):
     :return: время публикации статьи;
         эта статья, добавленная в базу данных
     """
-    title = doc.find('span', {'class': title_class}).text.strip()
+    title = doc.find('span', {'class': TITLE_CLASS}).text.strip()
     # Заголовок статьи
     title = db_commands.clean_quotes(title)
-    time = doc.find('span', {'class': time_class}).text.strip()
+    time = doc.find('span', {'class': TIME_CLASS}).text.strip()
     # Время публикации статьи
     update_time = dateparser.parse(time)
     # Вермя публикации статьи в удобном формате
@@ -71,7 +72,7 @@ def parse_doc(topic, doc, is_new_topic):
     real_doc = db_commands.search_doc(title)
     # Результат поиска статьи в базе данных по названию
     if real_doc is None:
-        url = doc.find('a', {'class': doc_url_class})['href'].strip()
+        url = doc.find('a', {'class': DOC_URL_CLASS})['href'].strip()
         # Адрес статьи
         print(url)
         doc_text = BeautifulSoup(requests.get(url).text, 'lxml')
@@ -83,7 +84,7 @@ def parse_doc(topic, doc, is_new_topic):
         # Добавленная в базу данных статья
         tag_data = BeautifulSoup(requests.get(real_doc.url).text, 'lxml')
         # Страница статьи
-        tags_block = tag_data.find('div', {'class': tags_class})
+        tags_block = tag_data.find('div', {'class': TAGS_CLASS})
         # Блок тэгов статьи
         if tags_block is not None:
             parse_tag(real_doc, tags_block)
@@ -128,7 +129,7 @@ def parse_tag(doc, tags_block):
     :param tags_block: блок тэгов этого документа
     :return: добавляет тэги в базу данных
     """
-    tags = tags_block.find_all('a', {'class': tag_class})
+    tags = tags_block.find_all('a', {'class': TAG_CLASS})
     # Список тэгов в статье
     for tag in tags:
         tag_name = tag.text.strip()
@@ -142,9 +143,9 @@ def parse():
     """
     Функция, производящая парсинг сайта
     """
-    data = BeautifulSoup(requests.get(website).text, 'lxml')
+    data = BeautifulSoup(requests.get(WEBSITE).text, 'lxml')
     # Полные данные с страницы со статьями
-    topics = data.find_all('div', {'class': topic_class})
+    topics = data.find_all('div', {'class': TOPIC_CLASS})
     # Список тем на странице
     print(len(topics))
     for topic in topics:
@@ -154,11 +155,11 @@ def parse():
             print('new_topic', real_topic.name)
         else:
             print(real_topic.name)
-        new_upd_time = default_date
+        new_upd_time = DEFAULT_DATE
         # Вермя для обновления времени обновления темы
         top = BeautifulSoup(requests.get(real_topic.url).text, 'lxml')
         # Страница темы
-        docs = top.find_all('div', {'class': topic_docs})
+        docs = top.find_all('div', {'class': TOPIC_DOCS})
         # Все статьи со страницы темы
         print(len(docs))
         for doc in docs:
@@ -174,5 +175,5 @@ def parse():
 
 if __name__ == '__main__':
     session = requests.Session()
-    session.max_redirects = 100
+    session.max_redirects = MAX_SESSION_COUNT
     parse()

@@ -6,7 +6,7 @@ import dateparser
 
 db = SqliteDatabase('news.db')
 # База данных новостей
-today = dateparser.parse('today')
+TODAY = dateparser.parse('today')
 # Дефолтная текущая дата
 
 
@@ -39,7 +39,7 @@ class Document(Model):
     topic = ForeignKeyField(Topic, related_name='documents')
     name = CharField(null='')
     url = CharField(null='')
-    last_update_time = DateTimeField(null=today)
+    last_update_time = DateTimeField(null=TODAY)
     text = CharField(null='')
 
     class Meta:
