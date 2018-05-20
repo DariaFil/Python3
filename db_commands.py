@@ -78,9 +78,11 @@ def search_topic(topic):
     :return: тема из базы данных, если она в ней есть, иначе None
     """
     exist_topic = Topic.select().\
-        where(Topic.name == topic).get()
+        where(Topic.name == topic)
     # Тема из базы данных, если она там есть
-    return exist_topic
+    if len(exist_topic) == 0:
+        return None
+    return exist_topic[0]
 
 
 def search_doc(doc):
@@ -90,9 +92,11 @@ def search_doc(doc):
     :return: статья из базы данных, если она в ней есть, иначе None
     """
     exist_doc = Document.select().\
-        where(Document.name == doc).get()
+        where(Document.name == doc)
     # Статья из базы данных, если она там есть
-    return exist_doc
+    if len(exist_doc) == 0:
+        return None
+    return exist_doc[0]
 
 
 def search_tag(doc, tag):
@@ -103,9 +107,11 @@ def search_tag(doc, tag):
     :return:
     """
     exist_tag = Tag.select().\
-        where(Tag.name == tag and Tag.document == doc).get()
+        where(Tag.name == tag and Tag.document == doc)
     # Тэг из базы данных, если он там есть
-    return exist_tag
+    if len(exist_tag) == 0:
+        return None
+    return exist_tag[0]
 
 
 def search_last_topic(n):
